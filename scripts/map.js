@@ -1,17 +1,262 @@
+// Entities
+class Country {
+  constructor (
+  		code,
+  		name,
+  		population, 
+  		infected, 
+  		dead, 
+  		cureRate, 
+  		state, 
+  		isRural, 
+  		hasMaritimeDeparture, 
+  		hasLandBorder,
+  		hasAirExit,
+  		climate,
+  		alertLevel
+  ) {
+  	this.code = code;
+    this.name = name;
+    this.population = population;
+    this.infected = infected;
+    this.dead = dead;
+    this.cureRate = cureRate;
+    this.state = state;
+    this.isRural = isRural;
+    this.hasMaritimeDeparture = hasMaritimeDeparture;
+    this.hasLandBorder = hasLandBorder;
+    this.hasAirExit = hasAirExit;
+    this.climate = climate;
+    this.alertLevel = alertLevel;
+  }
 
-//script tab
+  get type(){
+  	return this.isRural == 1? "Rural":"Urbano";
+  }
+
+  getBooleanString(field){
+  	return field == 1? "Si":"No";
+  }
+
+  getTableString(){
+  	var k = '<tbody>'
+    k+= '<tr>';
+    k+= '<td> Población </td>';
+    k+= '<td>' + this.population + '</td>';
+    k+= '</tr>';
+    k+= '<tr>';
+    k+= '<td> Infectados </td>';
+    k+= '<td>' + this.infected + '</td>';
+    k+= '</tr>';
+    k+= '<tr>';
+    k+= '<td> Muertos </td>';
+    k+= '<td>' + this.dead + '</td>';
+    k+= '</tr>';
+    k+= '<tr>';
+    k+= '<td> Tasa de cura </td>';
+    k+= '<td>' + this.cureRate + '</td>';
+    k+= '</tr>';
+    k+= '<tr>';
+    k+= '<td> Estado </td>';
+    k+= '<td>' + this.state + '</td>';
+    k+= '</tr>';
+    k+= '<tr>';
+    k+= '<td> Tipo </td>';
+    k+= '<td>' + this.type + '</td>';
+    k+= '</tr>';
+    k+= '<tr>';
+    k+= '<td> Clima </td>';
+    k+= '<td>' + this.climate + '</td>';
+    k+= '</tr>';
+    k+= '<tr>';
+    k+= '<td> Salida maritima </td>';
+    k+= '<td>' + this.getBooleanString(this.hasMaritimeDeparture) + '</td>';
+    k+= '</tr>';
+    k+= '<tr>';
+    k+= '<td> Frontera terrestre </td>';
+    k+= '<td>' + this.getBooleanString(this.hasLandBorder) + '</td>';
+    k+= '</tr>';
+    k+= '<tr>';
+    k+= '<td> Salida aerea </td>';
+    k+= '<td>' + this.getBooleanString(this.hasAirExit) + '</td>';
+    k+= '</tr>';
+    k+= '<tr>';
+    k+= '<td> Nivel de alerta </td>';
+    k+= '<td>' + this.alertLevel + '</td>';
+    k+= '</tr>';
+    k+='</tbody>';
+    return k;
+  }
+}
+
+class Disease {
+  constructor (
+  		name,
+  		contagionRate = 0, 
+  		deadRate = 0, 
+  		mutations, 
+  		mutationRate
+  ) {
+    this.name = name;
+    this.contagionRate = contagionRate;
+    this.deadRate = deadRate;
+    this.mutations = mutations;
+    this.mutationRate = mutationRate;
+  }
+
+  get info(){
+  	return `Enfermedad: ${this.name} - Tasa de contagio: ${this.contagionRate} - Tasa de mortalidad: ${this.deadRate}`;
+  }
+}
+
+class Cure {
+  constructor (
+  		progressRate = 0,
+  		state = 'No ha comenzado', 
+  ) {
+    this.progressRate = progressRate;
+    this.state = state;
+  }
+}
+
+
+// Global variables
+var countriesQuantity = 208;
+var globalPopulation = 7000000;
+var time = 0;
+var countries = [];
+var disease = null;
+var cure = null;
+var alertLevels = [
+	"No detectada",
+	"Detectada",
+	"Maximo"
+]
+var climates = [
+	"Frio",
+	"Templado"
+]
+var countryStates = [
+	"Funcional",
+	"Colapsada",
+	"Extinta"
+]
+var cureStates = [
+	"No ha comenzado",
+	"En desarrollo",
+	"Casi terminada",
+	"Lista"
+]
+
+
+const breakIntoParts = (num, parts) => 
+        [...Array(parts)].map((_,i) => 
+          0|num/parts+(i < num%parts))
+
+function generateRandomIntegerInRange(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function cleanGlobalVariables(){
+	countries = [];
+	disease = null;
+	cure = null;
+}
+
+function getCountryInitialAttributes(countryCode, countryName, population){
+	return [
+		countryCode,
+		countryName,
+  		population, 
+  		0, 
+  		0, 
+  		0, 
+  		countryStates[0], 
+  		generateRandomIntegerInRange(0, 1), 
+  		generateRandomIntegerInRange(0, 1), 
+  		generateRandomIntegerInRange(0, 1),
+  		generateRandomIntegerInRange(0, 1),
+  		climates[generateRandomIntegerInRange(0, 1)],
+  		alertLevels[0]
+	]
+}
+
+function createCountryEntities(){
+	// 208 countries for the game
+	var aItems = $("#countryList a");
+	populationPerCountry = breakIntoParts(globalPopulation, countriesQuantity);
+	index = 0;
+	for (let a of aItems) {
+	    let countryName = $(a).text();   
+	    let countryCode = $(a).attr("data-id"); 
+	   	countries.push(
+	   		new Country(
+	   			...getCountryInitialAttributes(
+	   				countryCode, countryName, populationPerCountry[index]
+	   			)
+	   		)
+	   	);
+	   	index += 0;
+	}
+}
+
+function findCountryByCode(code){
+	return countries.find(country => {
+  		return country.code === code
+	})
+}
+
+function prepareGame(){
+	$('#map').css('display', 'none');
+    $('#time').css('display', 'none');
+    $('#diseaseInfo').css('display', 'none');
+    cleanGlobalVariables()
+    createCountryEntities()
+}
+
+function executeEverySecond(){
+	time += 1;
+    $('#time').text(`Tiempo: ${time}s`);
+}
+
+$( document ).ready(function() {
+	prepareGame()
+});
+
+
+$('#start').click(function(){
+    var diseaseName = $('#diseaseName').val()
+  	$('#diseaseName').css('display', 'none');
+    $('#start').css('display', 'none');
+
+    disease = new Disease(diseaseName, 10, 0, null, 2);
+  	$('#map').css('display', 'block');
+  	$('#diseaseInfo').css('display', 'block');
+  	 $('#time').css('display', 'block');
+  	$('#diseaseInfo').text(disease.info);
+
+  	setInterval(function(){ 
+  		executeEverySecond()
+	}, 1000);
+});
+
 $('.st0').click(function(){
-  var id = $(this).attr('id');
-  var content = $('.b7-data[data-id="'+id+'"]').text();
-  $('#selectedCountry span').text("Pais seleccionado: " + content);
-  //mapa
-  $('.st0').removeClass('active');
-  $(this).addClass('active');
+    var id = $(this).attr('id');
+    var content = $('.b7-data[data-id="'+id+'"]').text();
+    $('#selectedCountry span').text("Pais seleccionado: " + content);
+    country = findCountryByCode(id);
+    if(country){
+    	tableContent = country.getTableString();
+    	document.getElementById('tableData').innerHTML = tableContent;
+    }
+    //mapa
+    $('.st0').removeClass('active');
+    $(this).addClass('active');
   
-  $('.item-tab').removeClass('active');
-  $('.item-tab[data-id="'+id+'"]').addClass('active'); 
+    $('.item-tab').removeClass('active');
+    $('.item-tab[data-id="'+id+'"]').addClass('active'); 
 });
 
 //tab activo por default
-$('#PE').addClass('active'); //active mapa svg
-$('.item-tab[data-id="PE"]').addClass('active'); 
+// $('#VE').addClass('active'); //active mapa svg
+// $('.item-tab[data-id="VE"]').addClass('active'); 
