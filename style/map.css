@@ -11,3 +11,19 @@
     display: block;
   }
 }
+
+.float-container {
+    padding: 20px;
+}
+
+.float-child-a {
+    width: 50%;
+    float: left;
+    padding: 10px;
+}  
+
+.float-child-b {
+    width: 20%;
+    float: left;
+    padding: 10px;
+}  
