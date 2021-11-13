@@ -235,6 +235,11 @@ function findCountryByCode(code){
 	})
 }
 
+// returns the index of a country in the countries vector given a code, aka "VE" for venezuela's index
+function findCountryIndexByCode(code){
+  return countries.findIndex(country => country.code === code)
+}
+
 function prepareGame(){
 	$('#map').css('display', 'none');
     $('#time').css('display', 'none');
@@ -258,10 +263,19 @@ function updateGame(){
   // Updating countries
   for (var i = 0; i < countries.length; i++) {
     // check if there are infected in the 
-    if(countries[i].infected > 1){
+    if(countries[i].infected > 0){
       // chance to spread the virus over the population
       countries[i].increaseInfected();
-      
+      infectCountries(countries[i]);
+    }
+  }
+}
+
+function infectCountries(country){
+  // if country.hasBorder/hasLandBorder/hasSeaBorder
+  if(country.infected-country.dead > 0 && generateRandomIntegerInRange(0, 100) <= 25){
+    if(countries[generateRandomIntegerInRange(0,207)].infected < countries[generateRandomIntegerInRange(0,207)].population){
+      countries[generateRandomIntegerInRange(0,207)].infected += 1;
     }
   }
 }
@@ -282,7 +296,7 @@ $('#start').click(function(){
   	$('#diseaseName').css('display', 'none');
     $('#start').css('display', 'none');
 
-    disease = new Disease(diseaseName, 10, 0.5, null, 2);
+    disease = new Disease(diseaseName, 80, 0.5, null, 2);
   	$('#map').css('display', 'block');
   	$('#diseaseInfo').css('display', 'block');
   	 $('#time').css('display', 'block');
