@@ -1,3 +1,21 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+}
+#globalItems {
+    padding-top: 20px;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 27px;
+}
+#infectedCountries {
+    text-align: left;
+    height: 285px;
+    overflow: scroll;
+}
+.float-child-b table {
+    margin-left: 0;
+    margin-top: 10px;
+}
 .st0.active{            
 	fill: #f30909 !important;
     stroke: #333;

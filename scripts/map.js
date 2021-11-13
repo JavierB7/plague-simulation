@@ -283,6 +283,8 @@ function executeEverySecond(){
     $('#time').text(`Tiempo: ${time}s`);
     updateGame();
     updateMapColor();
+    listCountriesInfected();
+    globalTotaly();
 }
 
 $( document ).ready(function() {
@@ -319,12 +321,46 @@ function updateMapColor(){
     
   }
 }
+//globalPopulation
+function globalTotaly(){
+  var tDead = 0, tInfected = 0;
+  
+  //totalInfected
+  for (var i = 0; i < countries.length; i++) {
+    tDead += countries[i].dead;
+    tInfected += countries[i].infected;
+  }
+  $('#globalPopulation').text(globalPopulation);
+  $('#totalInfected').text(tInfected);
+  $('#totaldead').text(tDead);
+
+}
+
+function listCountriesInfected(){
+  var auxCountries = countries.sort(((a, b) => b.dead - a.dead));
+  var list = '<table>';
+  list += '<tr>';
+  list += '<th>Pais</th>';
+  list += '<th>Infectados</th>';
+  list += '<th>Muertos</th>';
+  list += '</tr>';
+  
+  for (var i = 0; i < auxCountries.length; i++) {
+      list += '<tr>';
+      list += '<td>'+auxCountries[i].name+'</td>';
+      list += '<td>'+auxCountries[i].infected+'</td>';
+      list += '<td>'+auxCountries[i].dead+'</td>';
+      list += '</tr>';
+  }
+  list += '</table>'; 
+  $('#infectedCountries').html(list);
+}
 
 function infectCountries(country){
   // if country.hasBorder/hasLandBorder/hasSeaBorder
   var livingInfected = country.infected-country.dead;
   if( livingInfected > 0 && generateRandomIntegerInRange(0, 100) <= (livingInfected/country.population)*100){
-    var nextIndex = generateRandomIntegerInRange(0,countries.length);
+    var nextIndex = generateRandomIntegerInRange(0,countries.length-1);
     if(countries[nextIndex].infected < countries[nextIndex].population){
       countries[nextIndex].infected += 1;
     }
