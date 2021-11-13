@@ -40,7 +40,7 @@ class Country {
 
   // this is the amount that one country helps towards the cure
   checkActivateCure(){
-    if(this.cureRate == 0){
+    if(this.cureRate == 0 && this.state == countryStates[0]){
       if(this.alertLevel == alertLevels[2] || this.alertLevel == alertLevels[1]){
         this.cureRate = 1/generateRandomIntegerInRange(26,208);
       }
@@ -58,7 +58,7 @@ class Country {
     }else{
       this.dead = buffer;
     }
-    if(this.dead > this.population*0.5 ){
+    if(this.dead > this.population*0.8 ){
       this.state = countryStates[2];
     }else if(this.dead > this.population*0.25){
       this.state = countryStates[1];
@@ -70,9 +70,11 @@ class Country {
   // increase the number of infected in the country
   // infectionRate: disease's infection rate
   increaseInfected(){
-    this.infected += increaseByRate(this.infected-this.dead, disease.contagionRate);
-    if( this.infected >= this.population){
+    var buffer = this.infected + increaseByRate(this.infected-this.dead, disease.contagionRate);
+    if( buffer >= this.population){
       this.infected = this.population;
+    }else{
+      this.infected = buffer;
     }
     if(this.infected > this.population*0.6 ){
       this.alertLevel = alertLevels[2];
@@ -216,6 +218,7 @@ var time = 0;
 var countries = [];
 var disease = null;
 var cure = null;
+var gameOver = 0; // 1=win, 2=lose
 var events = []
 var activeCountry = null;
 var activeEvent = null;
@@ -324,16 +327,31 @@ function prepareGame(){
     $('#diseaseInfo').css('display', 'none');
     cleanGlobalVariables()
     createCountryEntities()
-    countries[0].infected = 10;
+    countries[findCountryIndexByCode("VE")].infected = 10;
+}
+
+// changes the global flag to stop the game
+function checkGameOver(totalDead){
+  if(totalDead >= globalPopulation){
+    gameOver = 1; // winner
+  }else if (cure.progressRate > 100) {
+    gameOver = 2; // loser
+  }
 }
 
 function executeEverySecond(){
-	time += 1;
-    $('#time').text(`Tiempo: ${time}s`);
-    updateGame();
-    updateMapColor();
-    listCountriesInfected();
-    globalTotaly();
+  if (gameOver == 0){
+  	time += 1;
+      $('#time').text(`Tiempo: ${time}s`);
+      updateGame();
+      updateMapColor();
+      listCountriesInfected();
+      globalTotaly();
+  }else if(gameOver == 1){
+    // .... message for the winner
+  }else if (gameOver == 2) {
+    // .... message for the loser
+  }
 }
 
 $( document ).ready(function() {
@@ -349,19 +367,21 @@ function updateCountryTable(country){
 
 function updateGame(){
   // Updating countries
-  var cureCount = 0;
-  for (var i = 0; i < countries.length; i++) {
-    // check if there are infected in the 
-    if(countries[i].infected > 0){
-      // chance to spread the virus over the population
-      countries[i].increaseInfected();
-      infectCountries(countries[i]);
-      updateEventList(countries[i]);
+  if(gameOver == 0){
+    var cureCount = 0;
+    for (var i = 0; i < countries.length; i++) {
+      // check if there are infected in the 
+      if(countries[i].infected > 0){
+        // chance to spread the virus over the population
+        countries[i].increaseInfected();
+        infectCountries(countries[i]);
+        updateEventList(countries[i]);
+      }
+      cureCount += countries[i].cureRate;
     }
-    cureCount += countries[i].cureRate;
+    updateCountryTable(activeCountry);
+    cure.updateProgress(cureCount);
   }
-  updateCountryTable(activeCountry);
-  cure.updateProgress(cureCount);
 }
 
 function updateMapColor(){
@@ -388,10 +408,14 @@ function globalTotaly(){
     tDead += countries[i].dead;
     tInfected += countries[i].infected;
   }
+  if(tInfected > globalPopulation){
+    tInfected = globalPopulation;
+  }
   $('#globalPopulation').text(globalPopulation);
   $('#totalInfected').text(tInfected);
   $('#totaldead').text(tDead);
 
+  checkGameOver(tDead);
 }
 
 function listCountriesInfected(){
@@ -430,7 +454,7 @@ function infectCountries(country){
 // has randomness
 function increaseByRate(current, irate){
   var rate = irate/100;
-  var increment = Math.ceil((current*generateRandomIntegerInRange(0.7,1.3))*rate);
+  var increment = Math.ceil((current*generateRandomIntegerInRange(70,130)/100)*rate);
   if(increment < 0)
     return 0;
   else
