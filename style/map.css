@@ -1,5 +1,70 @@
 body {
     font-family: 'Montserrat', sans-serif;
+    background-image: url('../image/bg.jpg');
+    background-size: cover;
+    color: #fff;
+}
+h1 {
+    font-size: 60px;
+    color: #b72d2d;
+}
+.input-start {
+    width: 100%;
+    display: grid;
+    max-width: 450px;
+    margin: auto;
+    height: 210px;
+    margin-top: 130px;
+}
+.input-start input {
+    height: 45px;
+    font-size: 24px;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    background: #f1f1f1;
+}
+.input-start #start {
+    height: 60px;
+    font-size: 40px;
+    text-transform: uppercase;
+    border: 2px solid #b72d2d;
+    padding: 30px 60px;
+    color: #b72d2d;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    font-family: sans-serif;
+    transition: all .5s;
+    background-color: transparent;
+    line-height: 0px;
+}
+.input-start #start:before{
+    width: 100%;
+    height: 100%;
+    content: '';
+    margin: auto;
+    position: absolute;
+    top:  -100%;
+    left: -100%;
+    background: #b72d2d;
+    transition: all .5s;
+    z-index: -1;
+            
+}
+.input-start #start:hover{
+    color: white;
+}
+.input-start #start:hover:before{          
+    top: 0;
+    left: 0;
+
+}
+#tableData {
+    color: #000;
+}
+#infectedCountries {
+    display: none;
 }
 #globalItems {
     padding-top: 20px;
@@ -41,9 +106,10 @@ body {
 }  
 
 .float-child-b {
-    width: 20%;
+    width: 100%;
     float: left;
     padding: 10px;
+    max-width: 350px;
 }
 
 .float-child-time {

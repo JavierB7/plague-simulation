@@ -439,6 +439,7 @@ function increaseByRate(current, irate){
 
 $('#start').click(function(){
     var diseaseName = $('#diseaseName').val()
+    $('.input-start').css('display', 'none');
   	$('#diseaseName').css('display', 'none');
     $('#start').css('display', 'none');
 
@@ -447,6 +448,7 @@ $('#start').click(function(){
   	$('#map').css('display', 'block');
   	$('#diseaseInfo').css('display', 'block');
   	 $('#time').css('display', 'block');
+     $('#infectedCountries').css('display', 'block');
   	$('#diseaseInfo').text(disease.info);
 
   	setInterval(function(){ 
