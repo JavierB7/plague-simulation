@@ -253,6 +253,7 @@ function executeEverySecond(){
 	time += 1;
     $('#time').text(`Tiempo: ${time}s`);
     updateGame();
+    updateMapColor();
 }
 
 $( document ).ready(function() {
@@ -271,11 +272,25 @@ function updateGame(){
   }
 }
 
+function updateMapColor(){
+  // Updating countries color infected
+  for (var i = 0; i < countries.length; i++) {
+    var porcen = (countries[i].dead*100)/countries[i].population;
+    var opacity = 0.6 + (0.4 * (porcen/100));
+    var color = "rgba(87,44,44, "+ opacity +")";
+    if ( opacity == 1 ) {
+      color = "#f30909";
+    }
+    $('#'+countries[i].code).css('fill', color);
+  }
+}
+
 function infectCountries(country){
   // if country.hasBorder/hasLandBorder/hasSeaBorder
   if(country.infected-country.dead > 0 && generateRandomIntegerInRange(0, 100) <= 25){
-    if(countries[generateRandomIntegerInRange(0,207)].infected < countries[generateRandomIntegerInRange(0,207)].population){
-      countries[generateRandomIntegerInRange(0,207)].infected += 1;
+    var posCountrie = generateRandomIntegerInRange(0,207);
+    if(countries[posCountrie].infected < countries[posCountrie].population){
+      countries[posCountrie].infected += 1;
     }
   }
 }
