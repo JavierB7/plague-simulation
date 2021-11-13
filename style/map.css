@@ -44,4 +44,22 @@ body {
     width: 20%;
     float: left;
     padding: 10px;
+}
+
+.float-child-time {
+    width: 10%;
+    float: left;
+    padding: 5px;
 }  
+
+.float-child-new {
+    width: 40%;
+    float: left;
+    padding: 5px;
+}
+
+.float-child-disease {
+    width: 40%;
+    float: left;
+    padding: 5px;
+}
