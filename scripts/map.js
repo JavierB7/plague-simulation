@@ -84,6 +84,7 @@ class Country {
     this.increaseDead();
   }
 
+  // Country reached a number of infected
   reachedNumberOfInfectedText(number){
     if (this.infected >= number && !this.reachedInfest){
       this.reachedInfest = true;
@@ -92,6 +93,7 @@ class Country {
     return ""; 
   }
 
+  // Country reached a number of dead
   reachedHalfOfDeadText(number){
     if (this.dead >= this.population/2 && !this.reachedDead){
       this.reachedDead = true;
@@ -243,6 +245,13 @@ var cureStates = [
 	"Lista"
 ]
 
+function openModal(){
+   $('#popup').fadeIn('slow');
+  $('.popup-overlay').fadeIn('slow');
+  $('.popup-overlay').height($(window).height());
+}
+
+
 const breakIntoParts = (num, parts) => 
         [...Array(parts)].map((_,i) => 
           0|num/parts+(i < num%parts))
@@ -348,9 +357,15 @@ function executeEverySecond(){
       listCountriesInfected();
       globalTotaly();
   }else if(gameOver == 1){
-    // .... message for the winner
+    console.log("EPA")
+    openModal()
+    $("#gameMessage").text("Plague INC: Has ganado. El planeta colapsó gracias a tu enfermedad.");
+    gameOver = 0;
   }else if (gameOver == 2) {
-    // .... message for the loser
+    console.log("EPA2")
+    openModal()
+   $("#gameMessage").text("Plague INC: Has perdido. Se ha desarrollado una cura para tu enfermedad.");
+   gameOver = 0;
   }
 }
 
@@ -414,6 +429,7 @@ function globalTotaly(){
   $('#globalPopulation').text(globalPopulation);
   $('#totalInfected').text(tInfected);
   $('#totaldead').text(tDead);
+  $('#progressCure').text(`Progreso total de la cura: ${Math.round((cure.progressRate + Number.EPSILON) * 100) / 100}%`);
 
   checkGameOver(tDead);
 }
@@ -478,6 +494,17 @@ $('#start').click(function(){
   	setInterval(function(){ 
   		executeEverySecond()
 	}, 1000);
+});
+
+$('#open').on('click', function(){
+  openModal()
+  return false;
+});
+ 
+$('#close').on('click', function(){
+  $('#popup').fadeOut('slow');
+  $('.popup-overlay').fadeOut('slow');
+  return false;
 });
 
 $('.st0').click(function(){

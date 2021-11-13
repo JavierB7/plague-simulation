@@ -12,6 +12,17 @@
   
 </head>
 <body>
+  <div id="popup" style="display: none;">
+    <div class="content-popup">
+        <div class="close"><a href="#" id="close">X</a></div>
+        <div>
+          <h2 id="gameMessage">Plague INC</h2>
+          <div style="float:left; width:100%;">
+      </div>
+        </div>
+    </div>
+</div>
+<div class="popup-overlay"></div>
   <div width="100%" align="center">
     <h1>Plague INC</h1>
   </div>
@@ -38,7 +49,7 @@
       </div>
 
       <div id="globalItems">
-        <div>Total Población: <span id="globalPopulation">0</span></div>
+        <div>Total Población: <span id="globalPopulation">0</span> <span style="padding: 20px;" id="progressCure">0</span></div>
         <div>Total Infectados: <span id="totalInfected">0</span></div>
         <div>Total Muertes: <span id="totaldead">0</span></div>
       </div>
