@@ -341,9 +341,9 @@ function prepareGame(){
 
 // changes the global flag to stop the game
 function checkGameOver(totalDead){
-  if(totalDead >= globalPopulation){
+  if(totalDead >= globalPopulation && gameOver != 3){
     gameOver = 1; // winner
-  }else if (cure.progressRate > 100) {
+  }else if (cure.progressRate > 100 && gameOver != 3) {
     gameOver = 2; // loser
   }
 }
@@ -360,12 +360,12 @@ function executeEverySecond(){
     console.log("EPA")
     openModal()
     $("#gameMessage").text("Plague INC: Has ganado. El planeta colapsó gracias a tu enfermedad.");
-    gameOver = 0;
+    gameOver = 3;
   }else if (gameOver == 2) {
     console.log("EPA2")
     openModal()
    $("#gameMessage").text("Plague INC: Has perdido. Se ha desarrollado una cura para tu enfermedad.");
-   gameOver = 0;
+   gameOver = 3;
   }
 }
 
