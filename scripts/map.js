@@ -160,7 +160,7 @@ class Cure {
 
 
 // Global variables
-var countriesQuantity = 208;
+var countriesQuantity = 219;
 var globalPopulation = 7000000;
 var time = 0;
 var countries = [];
@@ -286,22 +286,24 @@ function updateGame(){
 function updateMapColor(){
   // Updating countries color infected
   for (var i = 0; i < countries.length; i++) {
-    var porcen = (countries[i].dead*100)/countries[i].population;
-    var opacity = 0.6 + (0.4 * (porcen/100));
-    var color = "rgba(87,44,44, "+ opacity +")";
-    if ( opacity == 1 ) {
-      color = "#f30909";
+    if (countries[i].dead > 0) {
+      var porcen = (countries[i].dead*100)/countries[i].population;
+      var opacity = 0.6 + (0.4 * (porcen/100));
+      var color = "rgba(87,44,44, "+ opacity +")";
+      if ( opacity == 1 ) {
+        color = "#f30909";
+      }
+      $('#'+countries[i].code).css('fill', color);
     }
-    $('#'+countries[i].code).css('fill', color);
+    
   }
 }
 
 function infectCountries(country){
   // if country.hasBorder/hasLandBorder/hasSeaBorder
-
   var livingInfected = country.infected-country.dead;
   if( livingInfected > 0 && generateRandomIntegerInRange(0, 100) <= (livingInfected/country.population)*100){
-    var nextIndex = generateRandomIntegerInRange(0,207);
+    var nextIndex = generateRandomIntegerInRange(0,countries.length);
     if(countries[nextIndex].infected < countries[nextIndex].population){
       countries[nextIndex].infected += 1;
 
