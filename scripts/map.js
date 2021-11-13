@@ -13,7 +13,9 @@ class Country {
   		hasLandBorder,
   		hasAirExit,
   		climate,
-  		alertLevel
+  		alertLevel,
+      reachedInfest=false,
+      reachedDead=false
   ) {
   	this.code = code;
     this.name = name;
@@ -28,6 +30,8 @@ class Country {
     this.hasAirExit = hasAirExit;
     this.climate = climate;
     this.alertLevel = alertLevel;
+    this.reachedInfest = reachedInfest;
+    this.reachedDead = reachedDead;
   }
 
   get type(){
@@ -78,7 +82,22 @@ class Country {
     this.increaseDead();
   }
 
-  
+  reachedNumberOfInfectedText(number){
+    if (this.infected >= number && !this.reachedInfest){
+      this.reachedInfest = true;
+      return `${this.name} superó los ${number} infectados `;
+    }
+    return ""; 
+  }
+
+  reachedHalfOfDeadText(number){
+    if (this.dead >= this.population/2 && !this.reachedDead){
+      this.reachedDead = true;
+      return `Más de la mitad de la población de ${this.name} ha fallecido`;
+    }
+    return ""; 
+  }
+
   getBooleanString(field){
   	return field == 1? "Si":"No";
   }
@@ -176,14 +195,30 @@ class Cure {
   }
 }
 
+class DEvent {
+  constructor (
+      message = "",
+      maxTime = 2,
+      timelife = 0,
+      whenHappens 
+  ) {
+    this.message = message;
+    this.timelife = timelife;
+    this.whenHappens = whenHappens;
+  }
+}
 
 // Global variables
 var countriesQuantity = 219;
 var globalPopulation = 7000000;
+var reachedNumberOfInfected = 10000;
 var time = 0;
 var countries = [];
 var disease = null;
 var cure = null;
+var events = []
+var activeCountry = null;
+var activeEvent = null;
 var alertLevels = [
 	"No detectada",
 	"Detectada",
@@ -218,6 +253,8 @@ function cleanGlobalVariables(){
 	countries = [];
 	disease = null;
 	cure = null;
+  activeCountry = null;
+  activeEvent = null;
 }
 
 function getCountryInitialAttributes(countryCode, countryName, population){
@@ -238,6 +275,18 @@ function getCountryInitialAttributes(countryCode, countryName, population){
 	]
 }
 
+function updateEventList(country){
+  reachedInfected = country.reachedNumberOfInfectedText(reachedNumberOfInfected);
+  reachedDead = country.reachedHalfOfDeadText();
+  text = "";
+  if (reachedInfected) text = reachedInfected;
+  if (reachedDead) text = reachedDead;
+  if(text){
+    event = new DEvent(text, 2, 0, time);
+    events.push(event);
+    $('#news').text("<< " + event.message + " >>");
+  }
+}
 
 function createCountryEntities(){
 	// 208 countries for the game
@@ -289,6 +338,13 @@ $( document ).ready(function() {
 	prepareGame()
 });
 
+function updateCountryTable(country){
+  if(country){
+    tableContent = country.getTableString();
+    document.getElementById('tableData').innerHTML = tableContent;    
+  }
+}
+
 function updateGame(){
   // Updating countries
   var cureCount = 0;
@@ -298,9 +354,11 @@ function updateGame(){
       // chance to spread the virus over the population
       countries[i].increaseInfected();
       infectCountries(countries[i]);
+      updateEventList(countries[i]);
     }
     cureCount += countries[i].cureRate;
   }
+  updateCountryTable(activeCountry);
   cure.updateProgress(cureCount);
 }
 
@@ -322,9 +380,10 @@ function updateMapColor(){
 
 function infectCountries(country){
   // if country.hasBorder/hasLandBorder/hasSeaBorder
+  if(!country) return;
   var livingInfected = country.infected-country.dead;
   if( livingInfected > 0 && generateRandomIntegerInRange(0, 100) <= (livingInfected/country.population)*100){
-    var nextIndex = generateRandomIntegerInRange(0,countries.length);
+    var nextIndex = generateRandomIntegerInRange(0,countries.length-1);
     if(countries[nextIndex].infected < countries[nextIndex].population){
       countries[nextIndex].infected += 1;
     }
@@ -363,11 +422,8 @@ $('.st0').click(function(){
     var id = $(this).attr('id');
     var content = $('.b7-data[data-id="'+id+'"]').text();
     $('#selectedCountry span').text("Pais seleccionado: " + content);
-    country = findCountryByCode(id);
-    if(country){
-    	tableContent = country.getTableString();
-    	document.getElementById('tableData').innerHTML = tableContent;
-    }
+    activeCountry = findCountryByCode(id);
+    updateCountryTable(activeCountry)
     //mapa
     $('.st0').removeClass('active');
     $(this).addClass('active');
