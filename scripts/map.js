@@ -15,7 +15,8 @@ class Country {
   		climate,
   		alertLevel,
       reachedInfest=false,
-      reachedDead=false
+      reachedDead=false,
+      reachedColapsed=false
   ) {
   	this.code = code;
     this.name = name;
@@ -32,6 +33,7 @@ class Country {
     this.alertLevel = alertLevel;
     this.reachedInfest = reachedInfest;
     this.reachedDead = reachedDead;
+    this.reachedColapsed = reachedColapsed;
   }
 
   get type(){
@@ -98,6 +100,14 @@ class Country {
     if (this.dead >= this.population/2 && !this.reachedDead){
       this.reachedDead = true;
       return `Más de la mitad de la población de ${this.name} ha fallecido`;
+    }
+    return ""; 
+  }
+
+  reachedTheStateColapsed(){
+    if (this.state == countryStates[1] && !this.reachedColapsed){
+      this.reachedColapsed = true;
+      return `${this.name} ha colapsado.`;
     }
     return ""; 
   }
@@ -289,10 +299,12 @@ function getCountryInitialAttributes(countryCode, countryName, population){
 
 function updateEventList(country){
   reachedInfected = country.reachedNumberOfInfectedText(reachedNumberOfInfected);
-  reachedDead = country.reachedHalfOfDeadText();
+  // reachedDead = country.reachedHalfOfDeadText();
+  reachedColapsed = country.reachedTheStateColapsed();
   text = "";
   if (reachedInfected) text = reachedInfected;
-  if (reachedDead) text = reachedDead;
+  // if (reachedDead) text = reachedDead;
+  if (reachedColapsed) text = reachedColapsed;
   if(text){
     event = new DEvent(text, 2, 0, time);
     events.push(event);
