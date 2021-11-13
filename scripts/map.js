@@ -41,8 +41,14 @@ class Country {
     var buffer = this.dead + increaseByRate(this.infected-this.dead, disease.deadRate);
     if(buffer >= this.infected){ // there are no living infected, 
       this.dead = this.infected;
+
     }else{
       this.dead = buffer;
+    }
+    if(this.dead > this.population*0.5 ){
+      this.state = countryStates[2];
+    }else if(this.dead > this.population*0.25){
+      this.state = countryStates[1];
     }
   };
 
@@ -53,6 +59,11 @@ class Country {
     this.infected += increaseByRate(this.infected-this.dead, disease.contagionRate);
     if( this.infected >= this.population){
       this.infected = this.population;
+    }
+    if(this.infected > this.population*0.6 ){
+      this.alertLevel = alertLevels[2];
+    }else if(this.infected > this.population*0.15){
+      this.alertLevel = alertLevels[1];
     }
     this.increaseDead();
   }
@@ -273,9 +284,11 @@ function updateGame(){
 
 function infectCountries(country){
   // if country.hasBorder/hasLandBorder/hasSeaBorder
-  if(country.infected-country.dead > 0 && generateRandomIntegerInRange(0, 100) <= 25){
-    if(countries[generateRandomIntegerInRange(0,207)].infected < countries[generateRandomIntegerInRange(0,207)].population){
-      countries[generateRandomIntegerInRange(0,207)].infected += 1;
+  var livingInfected = country.infected-country.dead;
+  if( livingInfected > 0 && generateRandomIntegerInRange(0, 100) <= (livingInfected/country.population)*100){
+    var nextIndex = generateRandomIntegerInRange(0,207);
+    if(countries[nextIndex].infected < countries[nextIndex].population){
+      countries[nextIndex].infected += 1;
     }
   }
 }
