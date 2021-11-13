@@ -42,7 +42,7 @@ class Country {
   checkActivateCure(){
     if(this.cureRate == 0 && this.state == countryStates[0]){
       if(this.alertLevel == alertLevels[2] || this.alertLevel == alertLevels[1]){
-        this.cureRate = 1/generateRandomIntegerInRange(26,208);
+        this.cureRate = 1/generateRandomIntegerInRange(58,300);
       }
     }
   }
@@ -458,7 +458,7 @@ function infectCountries(country){
   // if country.hasBorder/hasLandBorder/hasSeaBorder
   if(!country) return;
   var livingInfected = country.infected-country.dead;
-  if( livingInfected > 0 && generateRandomIntegerInRange(0, 100) <= (livingInfected/country.population)*100){
+  if( livingInfected > 0 && generateRandomIntegerInRange(0, 100) <= ((livingInfected/country.population)*100)+generateRandomIntegerInRange(0,30)){
     var nextIndex = generateRandomIntegerInRange(0,countries.length-1);
     if(countries[nextIndex].infected < countries[nextIndex].population){
       countries[nextIndex].infected += 1;
@@ -483,7 +483,7 @@ $('#start').click(function(){
   	$('#diseaseName').css('display', 'none');
     $('#start').css('display', 'none');
 
-    disease = new Disease(diseaseName, 80, 0.5, null, 2);
+    disease = new Disease(diseaseName, 90, 16, null, 2);
     cure = new Cure(0,cureStates[0]);
   	$('#map').css('display', 'block');
   	$('#diseaseInfo').css('display', 'block');
