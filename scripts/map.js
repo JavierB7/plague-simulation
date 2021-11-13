@@ -34,6 +34,15 @@ class Country {
   	return this.isRural == 1? "Rural":"Urbano";
   }
 
+  // this is the amount that one country helps towards the cure
+  checkActivateCure(){
+    if(this.cureRate == 0){
+      if(this.alertLevel == alertLevels[2] || this.alertLevel == alertLevels[1]){
+        this.cureRate = 1/generateRandomIntegerInRange(26,208);
+      }
+    }
+  }
+
   /* increases the number of dead people based on the current infected
   NOTE: this doesn't consider population, so the disease can
   erradicate itself by killing all infected before they can spread it*/
@@ -50,6 +59,7 @@ class Country {
     }else if(this.dead > this.population*0.25){
       this.state = countryStates[1];
     }
+    this.checkActivateCure();
   };
 
 
@@ -155,6 +165,14 @@ class Cure {
   ) {
     this.progressRate = progressRate;
     this.state = state;
+  }
+
+
+  updateProgress(accumulatedProgress){
+    this.progressRate += accumulatedProgress;
+
+    // if progress = 100 game over
+    //........
   }
 }
 
@@ -273,6 +291,7 @@ $( document ).ready(function() {
 
 function updateGame(){
   // Updating countries
+  var cureCount = 0;
   for (var i = 0; i < countries.length; i++) {
     // check if there are infected in the 
     if(countries[i].infected > 0){
@@ -280,7 +299,9 @@ function updateGame(){
       countries[i].increaseInfected();
       infectCountries(countries[i]);
     }
+    cureCount += countries[i].cureRate;
   }
+  cure.updateProgress(cureCount);
 }
 
 function updateMapColor(){
@@ -298,13 +319,11 @@ function updateMapColor(){
 
 function infectCountries(country){
   // if country.hasBorder/hasLandBorder/hasSeaBorder
-
   var livingInfected = country.infected-country.dead;
   if( livingInfected > 0 && generateRandomIntegerInRange(0, 100) <= (livingInfected/country.population)*100){
     var nextIndex = generateRandomIntegerInRange(0,207);
     if(countries[nextIndex].infected < countries[nextIndex].population){
       countries[nextIndex].infected += 1;
-
     }
   }
 }
@@ -326,6 +345,7 @@ $('#start').click(function(){
     $('#start').css('display', 'none');
 
     disease = new Disease(diseaseName, 80, 0.5, null, 2);
+    cure = new Cure(0,cureStates[0]);
   	$('#map').css('display', 'block');
   	$('#diseaseInfo').css('display', 'block');
   	 $('#time').css('display', 'block');
